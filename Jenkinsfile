@@ -24,10 +24,10 @@ pipeline {
                     def customImage = docker.build("mrunalkhose/petclinic:${env.BUILD_NUMBER}", "./docker")
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
                     customImage.push()
-                    }
                 }
             }
         }
+    }
         stage('Build on kubernetes'){
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
@@ -36,8 +36,9 @@ pipeline {
                     sh 'ls -ltrh'
                     sh 'pwd'
                     sh '/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}'
-                } 
-            }
+            } 
         }
     }
+    
+}
 }
