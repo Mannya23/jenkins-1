@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stage ('Build Maven') {
+        stage('Build Maven') {
             steps {
                 sh 'pwd'
                 sh 'mvn clean install package'
@@ -13,12 +13,12 @@ pipeline {
                 sh 'cp -r target/*.jar docker'
             }
         }
-        stage ('run test') {
+        stage('run test') {
             steps {
                 sh 'mvn test'
             }
         }
-        stage ('Build Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     def customImage = docker.build("mrunalkhose/petclinic:${env.BUILD_NUMBER}", "./docker")
@@ -39,6 +39,6 @@ pipeline {
             } 
         }
     }
-    
+
 }
 }
