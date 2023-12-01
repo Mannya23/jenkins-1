@@ -1,25 +1,24 @@
 pipeline {
     agent any
     stages {
-        stage ('Build maven') {
-            steps{
+        stage('Build maven') {
+            steps {
                 sh 'pwd'
                 sh 'mvn clean install package'
-                
-            }   
-         }
-        stage ('Copy Artifacts') {
+            }
+        }
+        stage('Copy Artifacts') {
             steps {
                 sh 'pwd'
                 sh 'cp -r target/*.jar docker'
             }
         }
-        stage ('Unit test') {
+        stage('Unit test') {
             steps {
                 sh 'mvn test'
             }
         }
-        stage ('Build docker image') {
+        stage('Build docker image') {
             steps {
                 script {
                     def customImage = docker.build("mrunalkhose/petclinic:${env.BUILD_NUMBER}", "./docker")
@@ -29,7 +28,7 @@ pipeline {
                 }
             }
         }
-        stage ('Build on kubernetes') {
+        stage('Build on kubernetes') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     sh 'pwd'
@@ -37,8 +36,8 @@ pipeline {
                     sh 'ls -ltrh'
                     sh 'pwd'
                     sh '/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}'
-                }          
+                }
             }
         }
-    }   
+    }
 }
