@@ -8,7 +8,7 @@ pipeline {
             }
         }
         stage ('Copy Artifacts') {
-            steps{
+            steps {
                 sh 'pwd'
                 sh 'cp -r target/*.jar docker'
             }
