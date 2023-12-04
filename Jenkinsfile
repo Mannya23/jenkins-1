@@ -35,16 +35,22 @@ pipeline {
                 }
             }
         }
-    stage('Build on kubernetes'){
-        steps {
-            withKubeConfig([credentialsId: 'kubeconfig']) {
-                sh 'pwd'
-                sh 'cp -R helm/* .'
-                sh 'ls -ltrh'
-                sh 'pwd'
-                sh '/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}'
+    stage('Deploy to EKS') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIA4NYBRLJXI32MPEAY', credentialsId: 'kubeconfig', secretKeyVariable: 'A76yBfokeWsrqD7RYTXF8NQmwa7HWxETaiUNDt/wG']]) {
+                    withKubeConfig([credentialsId: 'kubeconfig']) {
+                        sh 'pwd'
+                        sh 'cp -R helm/* .'
+                        sh 'ls -ltrh'
+                        sh "pwd"
+
+                        script {
+                            sh "kubectl config use-context ${eksdemo}"
+                            sh "/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}"
+                        }
+                    }
+                }
             }
         }
     }
 }
-}            
