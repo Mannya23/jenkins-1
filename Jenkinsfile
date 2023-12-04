@@ -1,11 +1,20 @@
 pipeline {
     agent any
 
-    environment {
+     environment {
         EKS_CLUSTER_NAME = "eksdemo"
         AWS_REGION = "us-east-1"
     }
-
+    stages {
+        stage('Debug') {
+            steps {
+                script {
+                    echo "Access Key: ${env.AKIA4NYBRLJXI32MPEAY}"
+                    echo "Secret Key: ${env.A76yBfokeWsrqD7RYTXF8NQmwa7HWxETaiUNDt_wG}"
+                    echo "Credentials ID: ${env.credentialsId}"
+                }
+            }
+        }         
     stages {
         stage('Build Maven') {
             steps {
@@ -13,6 +22,7 @@ pipeline {
                 sh 'mvn clean install package'
             }
         }
+    }    
     stage('Copy Artifacts') {
             steps {
                 sh 'pwd'
@@ -24,7 +34,6 @@ pipeline {
                 sh 'mvn test'
             }
         }
-
     stage('Build Docker Image') {
             steps {
                 script {
@@ -34,23 +43,20 @@ pipeline {
                     }
                 }
             }
-        }
-    stage('Deploy to EKS') {
-            steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIA4NYBRLJXI32MPEAY', credentialsId: 'dockerhub', secretKeyVariable: 'A76yBfokeWsrqD7RYTXF8NQmwa7HWxETaiUNDt/wG']]) {
-                    withKubeConfig([credentialsId: 'kubeconfig']) {
-                        sh 'pwd'
-                        sh 'cp -R helm/* .'
-                        sh 'ls -ltrh'
-                        sh "pwd"
-
-                        script {
-                            sh "kubectl config use-context ${eksdemo}"
-                            sh "/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}"
-                        }
-                    }
-                }
+        }        
+    stage('Build on kubernetes'){
+        steps {
+            withKubeConfig([credentialsId: 'kubeconfig']) {
+                sh 'pwd'
+                sh 'cp -R helm/* .'
+                sh 'ls -ltrh'
+                sh 'pwd'
+                sh '/usr/local/bin/helm upgrade --install petclinic-app petclinic --set image.repository=mrunalkhose/petclinic --set image.tag=${BUILD_NUMBER}'
             }
         }
     }
 }
+}
+        
+
+    
