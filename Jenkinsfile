@@ -37,7 +37,7 @@ pipeline {
         }
     stage('Deploy to EKS') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIA4NYBRLJXI32MPEAY', credentialsId: 'your-aws-credentials-id', secretKeyVariable: 'A76yBfokeWsrqD7RYTXF8NQmwa7HWxETaiUNDt/wG']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIA4NYBRLJXI32MPEAY', credentialsId: '854164855406', secretKeyVariable: 'A76yBfokeWsrqD7RYTXF8NQmwa7HWxETaiUNDt/wG']]) {
                     withKubeConfig([credentialsId: 'kubeconfig']) {
                         sh 'pwd'
                         sh 'cp -R helm/* .'
