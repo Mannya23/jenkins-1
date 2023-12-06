@@ -1,15 +1,3 @@
-we need to install metrics server 
-
-https://github.com/kubernetes-sigs/metrics-server/releases
-
-we can use particular version from this link and for avoiding rediness prob 500 issues we need to add one property in deplyment.yaml
-
-
---kubelet-insecure-tls
-
-
----
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
